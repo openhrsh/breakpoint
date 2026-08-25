@@ -1,0 +1,24 @@
+# [package]
+# name = "breakpoint"
+# version = "0.1.0"
+# edition = "2024"
+
+[workspace]
+members = [
+    "crates/bp-agent",
+    "crates/bp-cdp",
+    "crates/bp-cli",
+    "crates/bp-core",
+    "crates/bp-ipc",
+    "crates/bp-mcp",
+    "crates/bp-native",
+    "crates/bp-sandbox",
+    "crates/bp-tui",
+]
+
+# [[bin]]
+# name = "breakpoint"
+# path = "crates/bp-cli/src/main.rs"
+
+[workspace.dependencies]
+smallvec = "1.15.2"
