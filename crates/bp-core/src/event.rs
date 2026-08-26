@@ -29,8 +29,15 @@ impl EventKind {
 #[repr(C)]
 pub struct TraceEvent {
     pub ts: u64,
-    pub kind: EventKind,
+    pub kind: u8, //EventKind as u8
+    pub fn_id: u32, //interned function ID
+    pub flags: u8, //packed boolean flags
+    pub payload_len: u16, //args bytes payload
 }
 
 impl TraceEvent {
+
+    pub fn elapsed_ms(&self, session_start: u64) -> f64 {
+        (self.ts - session_start) as f64 / 1000.0
+    }
 }
