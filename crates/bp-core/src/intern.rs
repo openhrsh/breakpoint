@@ -1,4 +1,4 @@
-//a dictoinary that converts strings to small ints
+//a dictionary that converts strings to small ints
 
 use std::collections::HashMap;
 
@@ -18,7 +18,7 @@ impl InternTable {
 
     pub fn intern(&mut self, name: &str) -> u32 {
         if let Some(&id) = self.forward.get(name) {
-            return id;
+            return id; //fast O(1) lookup
         }
 
         let id = self.reverse.len() as u32;
@@ -27,6 +27,8 @@ impl InternTable {
         id
     }
 
+    //resolve id back to string, O(1) vec index
+    // returns borrowed &str, no allocation
     pub fn resolve(&self, id: u32) -> Option<&str> {
         self.reverse.get(id as usize).map(|s| s.as_str())
     }
@@ -44,12 +46,14 @@ impl InternTable {
         let mut buf = Vec::new();
         buf.extend_from_slice(&(self.reverse.len() as u32).to_be_bytes());
         for name in &self.reverse {
+            //write each string as: u16 length + utf8 bytes
             buf.extend_from_slice(&(name.len() as u16).to_be_bytes());
             buf.extend_from_slice(name.as_bytes());
         }
         buf
     }
 
+    //deserialize from bytes
     pub fn from_bytes(bytes: &[u8]) -> Option<Self> {
         let mut table = Self::new();
         let mut pos = 0;

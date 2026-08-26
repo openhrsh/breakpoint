@@ -36,7 +36,8 @@ impl BinaryLog {
     // pub fn write_event(&mut self, event: &TraceEvent) {}
 }
 
-//read
+//seperate reading struct
+//seperating read and write concerns
 pub struct TraceReader {
     reader: BufReader<File>,
     pub intern_table: InternTable,

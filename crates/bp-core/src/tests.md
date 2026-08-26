@@ -1,0 +1,2 @@
+# `Core` Tests
+(an open source guide)<br>this file will outline all the tests that every type in this folder has to pass. A succesful pass will indicate that these types work as they should for the project
