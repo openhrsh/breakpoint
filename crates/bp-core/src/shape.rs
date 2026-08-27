@@ -1,9 +1,6 @@
-//argshape stores function arguments as shapes instead of individual values.
-// this way a shape would be 5-20 bytes
-// at 100k events, this would be 1-2mb of data than 100-200mb
-
+/// Argshape stores function arguments as shapes instead of individual values
+/// for smaller storage
 // use smallvec::SmallVec;
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum ArgShape {
     Undefined,
@@ -18,7 +15,7 @@ pub enum ArgShape {
 }
 
 impl ArgShape {
-    //how many bytes when serialized
+    /// How many bytes when serialized
     pub fn serialized_size(&self) -> usize {
         match self {
             Self::Undefined | Self::Null | Self::Number |

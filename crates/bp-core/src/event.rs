@@ -1,6 +1,9 @@
+/// Represents the type of operation captured in the trace.
+/// Use explicit integer mapping (repr[u8]) to prevent the compiler
+/// from automatically shifting values if we insert new event types later
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(u8)] //tells rust to store EventKind as a u8
-pub enum EventKind { //MUST integer map to avoid compiler sequential assigning when inserting new events in between
+#[repr(u8)]
+pub enum EventKind {
     FnCall = 0,
     FnReturn = 1,
     ConsoleLog = 2,
@@ -8,11 +11,12 @@ pub enum EventKind { //MUST integer map to avoid compiler sequential assigning w
     Error = 4,
     MemWrite = 5,
     RegState = 6,
-    //TODO: add more event kinds, I think 256 exist
+    //TODO: Map remaining 250 event types
 }
 
 impl EventKind {
-    pub fn from_u8(byte: u8) -> Option<Self> { //convert the stored u8 EventKind to enum 
+    /// Convert the stored u8 EventKind to enum
+    pub fn from_u8(byte: u8) -> Option<Self> { 
         match byte {
             0 => Some(EventKind::FnCall),
             1 => Some(EventKind::FnReturn),

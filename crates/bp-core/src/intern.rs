@@ -1,7 +1,6 @@
-//a dictionary that converts strings to small ints
-
 use std::collections::HashMap;
 
+/// A dictionary that converts strings to small ints
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct InternTable {
     forward: HashMap<String, u32>, //intern new strings
@@ -27,8 +26,8 @@ impl InternTable {
         id
     }
 
-    //resolve id back to string, O(1) vec index
-    // returns borrowed &str, no allocation
+    /// Resolve id back to string, O(1) vec index.
+    /// Returns borrowed &str, no allocation
     pub fn resolve(&self, id: u32) -> Option<&str> {
         self.reverse.get(id as usize).map(|s| s.as_str())
     }
@@ -41,19 +40,19 @@ impl InternTable {
         self.reverse.is_empty()
     }
 
-    //serialize to bytes
+    /// Serialize to bytes
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut buf = Vec::new();
-        buf.extend_from_slice(&(self.reverse.len() as u32).to_be_bytes());
+        buf.extend_from_slice(&(self.reverse.len() as u32).to_le_bytes());
         for name in &self.reverse {
             //write each string as: u16 length + utf8 bytes
-            buf.extend_from_slice(&(name.len() as u16).to_be_bytes());
+            buf.extend_from_slice(&(name.len() as u16).to_le_bytes());
             buf.extend_from_slice(name.as_bytes());
         }
         buf
     }
 
-    //deserialize from bytes
+    /// Deserialize from bytes
     pub fn from_bytes(bytes: &[u8]) -> Option<Self> {
         let mut table = Self::new();
         let mut pos = 0;

@@ -5,25 +5,26 @@ use std::path::Path;
 use crate::event::TraceEvent;
 use crate::intern::InternTable;
 
-//write
+/// Struct only for writing concerns
 pub struct BinaryLog {
     writer: BufWriter<File>,
     event_count: u64,
 }
 
 impl BinaryLog {
-    //create trace file
+    /// Create binary trace file
     pub fn create(path: &Path, intern_table: &InternTable) -> std::io::Result<Self> {
         let file = File::create(path)?;
         let mut writer = BufWriter::with_capacity(64 * 1024, file);
 
         let table_bytes = intern_table.to_bytes();
-        writer.write_all(&(table_bytes.len() as u32).to_be_bytes())?;
+        writer.write_all(&(table_bytes.len() as u32).to_le_bytes())?;
         writer.write_all(&table_bytes)?;
 
         Ok(Self { writer, event_count:0 })
     }
 
+    //NOTE: make sure flush is called before dropping BufWriter
     pub fn flush(&mut self) -> std::io::Result<()> {
         self.writer.flush()
     }
@@ -36,8 +37,7 @@ impl BinaryLog {
     // pub fn write_event(&mut self, event: &TraceEvent) {}
 }
 
-//seperate reading struct
-//seperating read and write concerns
+/// Struct only for reading concerns
 pub struct TraceReader {
     reader: BufReader<File>,
     pub intern_table: InternTable,
@@ -55,7 +55,8 @@ impl TraceReader {
 
         let mut table_bytes = vec![0u8; table_len];
         reader.read_exact(&mut table_bytes)?;
-        let intern_table = InternTable::from_bytes(&table_bytes).expect("corrupt intern table");
+        let intern_table = InternTable::from_bytes(&table_bytes).
+            ok_or_else(|| std::io::Error::new(std::io::ErrorKind::InvalidData, "corrupt intern table"))?;
 
         Ok(Self { reader, intern_table, event_count:0 })
     }
